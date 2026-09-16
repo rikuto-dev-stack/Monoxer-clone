@@ -13,3 +13,8 @@
 - `docs/system-architecture.md` を新規作成
   - 理由: システム構成・アーキテクチャ設計フェーズで、技術スタック(React/FastAPI/PostgreSQL)、
     リポジトリ構成、ローカル開発環境(Docker)を決定したため
+
+## 2026-09-16
+- `docs/db-design.md` を新規作成
+  - 理由: DB設計フェーズで、4つのテーブル(quiz_sets/questions/quiz_sessions/quiz_answers)の
+    構造と、初回正解を基準とした正答率の集計方針を決定したため
