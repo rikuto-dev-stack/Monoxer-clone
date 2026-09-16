@@ -59,7 +59,7 @@ quiz_answersのみ連動して削除される。
 
 ## 4. テーブル作成SQL(DDL)
 
-\`\`\`sql
+sql
 CREATE TABLE quiz_sets (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
@@ -97,4 +97,3 @@ CREATE TABLE quiz_answers (
     is_first_attempt BOOLEAN NOT NULL,
     answered_at TIMESTAMP NOT NULL DEFAULT now()
 );
-\`\`\`
