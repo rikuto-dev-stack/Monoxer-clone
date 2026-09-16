@@ -12,6 +12,9 @@ build/
 # 環境変数・秘密情報
 .env
 .env.*
+# ただし .env.example はテンプレートとしてコミットしたいので除外しない
+!.env.example
+!**/.env.example
 
 # IDE / OS
 .vscode/
