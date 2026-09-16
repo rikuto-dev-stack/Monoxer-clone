@@ -6,10 +6,31 @@ export type QuizSet = {
   latest_accuracy: number | null
 }
 
+// 問題(バックエンドのQuestionOutスキーマに対応)
+export type Question = {
+  id: number
+  quiz_set_id: number
+  question_text: string
+  choice_1: string
+  choice_2: string
+  choice_3: string
+  choice_4: string
+  correct_choice_number: number
+}
+
+// 問題作成・編集フォームで送信するデータの形(idやquiz_set_idはサーバー側で決まるため含まない)
+export type QuestionInput = {
+  question_text: string
+  choice_1: string
+  choice_2: string
+  choice_3: string
+  choice_4: string
+  correct_choice_number: number
+}
+
 // 問題集詳細(バックエンドのQuizSetDetailOutスキーマに対応)
-// questionsはStage 1時点では常に空配列
 export type QuizSetDetail = {
   id: number
   name: string
-  questions: unknown[]
+  questions: Question[]
 }

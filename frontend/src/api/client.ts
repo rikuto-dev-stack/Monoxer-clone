@@ -1,4 +1,4 @@
-import type { QuizSet, QuizSetDetail } from '../types'
+import type { Question, QuestionInput, QuizSet, QuizSetDetail } from '../types'
 
 // バックエンドのURLは環境変数(.envのVITE_API_BASE_URL)から読み込む
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL
@@ -43,6 +43,32 @@ export function updateQuizSet(id: number, name: string): Promise<QuizSet> {
 
 export function deleteQuizSet(id: number): Promise<null> {
   return fetch(`${API_BASE_URL}/api/quiz-sets/${id}`, {
+    method: 'DELETE',
+  }).then((res) => handleResponse<null>(res))
+}
+
+export function getQuestion(id: number): Promise<Question> {
+  return fetch(`${API_BASE_URL}/api/questions/${id}`).then((res) => handleResponse<Question>(res))
+}
+
+export function createQuestion(quizSetId: number, input: QuestionInput): Promise<Question> {
+  return fetch(`${API_BASE_URL}/api/quiz-sets/${quizSetId}/questions`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(input),
+  }).then((res) => handleResponse<Question>(res))
+}
+
+export function updateQuestion(id: number, input: QuestionInput): Promise<Question> {
+  return fetch(`${API_BASE_URL}/api/questions/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(input),
+  }).then((res) => handleResponse<Question>(res))
+}
+
+export function deleteQuestion(id: number): Promise<null> {
+  return fetch(`${API_BASE_URL}/api/questions/${id}`, {
     method: 'DELETE',
   }).then((res) => handleResponse<null>(res))
 }

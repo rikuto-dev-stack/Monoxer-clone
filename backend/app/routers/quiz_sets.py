@@ -50,7 +50,27 @@ def create_quiz_set(payload: schemas.QuizSetCreate, db: Session = Depends(get_db
 @router.get("/{quiz_set_id}", response_model=schemas.QuizSetDetailOut)
 def get_quiz_set(quiz_set_id: int, db: Session = Depends(get_db)):
     quiz_set = _get_quiz_set_or_404(db, quiz_set_id)
-    return schemas.QuizSetDetailOut(id=quiz_set.id, name=quiz_set.name, questions=[])
+    return schemas.QuizSetDetailOut(
+        id=quiz_set.id,
+        name=quiz_set.name,
+        questions=[schemas.QuestionOut.model_validate(q) for q in quiz_set.questions],
+    )
+
+
+@router.post(
+    "/{quiz_set_id}/questions",
+    response_model=schemas.QuestionOut,
+    status_code=status.HTTP_201_CREATED,
+)
+def create_question(
+    quiz_set_id: int, payload: schemas.QuestionCreate, db: Session = Depends(get_db)
+):
+    _get_quiz_set_or_404(db, quiz_set_id)  # 問題集が存在するか先に確認する
+    question = models.Question(quiz_set_id=quiz_set_id, **payload.model_dump())
+    db.add(question)
+    db.commit()
+    db.refresh(question)
+    return question
 
 
 @router.put("/{quiz_set_id}", response_model=schemas.QuizSetOut)

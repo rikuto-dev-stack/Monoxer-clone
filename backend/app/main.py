@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app import models  # noqa: F401  Base.metadata にテーブル定義を登録するために読み込む
 from app.database import Base, engine
-from app.routers import quiz_sets
+from app.routers import questions, quiz_sets
 
 
 @asynccontextmanager
@@ -27,3 +27,4 @@ app.add_middleware(
 )
 
 app.include_router(quiz_sets.router)
+app.include_router(questions.router)

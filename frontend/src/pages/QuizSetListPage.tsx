@@ -46,14 +46,14 @@ export function QuizSetListPage() {
       <ul>
         {quizSets.map((quizSet) => (
           <li key={quizSet.id}>
-            {quizSet.name}
+            <Link to={`/quiz-sets/${quizSet.id}`}>{quizSet.name}</Link>
             (問題数: {quizSet.question_count}、直近正答率:{' '}
             {quizSet.latest_accuracy === null
               ? '未挑戦'
               : `${Math.round(quizSet.latest_accuracy * 100)}%`}
             )
             {' '}
-            <Link to={`/quiz-sets/${quizSet.id}/edit`}>編集</Link>
+            <Link to={`/quiz-sets/${quizSet.id}/edit`}>名前を編集</Link>
             {' '}
             <button onClick={() => handleDelete(quizSet)}>削除</button>
           </li>
