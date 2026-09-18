@@ -34,3 +34,30 @@ export type QuizSetDetail = {
   name: string
   questions: Question[]
 }
+
+// クイズ出題中の問題(正解の選択肢番号は含まれない。カンニング防止のため)
+export type QuizSessionQuestion = {
+  id: number
+  question_text: string
+  choice_1: string
+  choice_2: string
+  choice_3: string
+  choice_4: string
+}
+
+export type QuizSessionStartResponse = {
+  session_id: number
+  questions: QuizSessionQuestion[]
+}
+
+export type QuizAnswerResponse = {
+  is_correct: boolean
+  correct_choice_number: number
+}
+
+export type QuizSessionFinishResponse = {
+  total_questions: number
+  correct_count: number
+  accuracy: number
+  incorrect_question_ids: number[]
+}

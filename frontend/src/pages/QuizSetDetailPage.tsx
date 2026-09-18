@@ -53,6 +53,11 @@ export function QuizSetDetailPage() {
       <p>
         <Link to={`/quiz-sets/${quizSet.id}/questions/new`}>＋ 問題を追加</Link>
       </p>
+      {quizSet.questions.length > 0 && (
+        <p>
+          <Link to={`/quiz-sets/${quizSet.id}/play`}>クイズ開始</Link>
+        </p>
+      )}
 
       <ul>
         {quizSet.questions.map((question) => (

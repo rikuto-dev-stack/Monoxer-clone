@@ -1,4 +1,12 @@
-import type { Question, QuestionInput, QuizSet, QuizSetDetail } from '../types'
+import type {
+  Question,
+  QuestionInput,
+  QuizAnswerResponse,
+  QuizSessionFinishResponse,
+  QuizSessionStartResponse,
+  QuizSet,
+  QuizSetDetail,
+} from '../types'
 
 // バックエンドのURLは環境変数(.envのVITE_API_BASE_URL)から読み込む
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL
@@ -71,4 +79,34 @@ export function deleteQuestion(id: number): Promise<null> {
   return fetch(`${API_BASE_URL}/api/questions/${id}`, {
     method: 'DELETE',
   }).then((res) => handleResponse<null>(res))
+}
+
+// question_idsを指定すると、その問題だけを出題する(「間違えた問題だけ再挑戦」用)
+export function startQuizSession(
+  quizSetId: number,
+  questionIds?: number[],
+): Promise<QuizSessionStartResponse> {
+  return fetch(`${API_BASE_URL}/api/quiz-sessions`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ quiz_set_id: quizSetId, question_ids: questionIds ?? null }),
+  }).then((res) => handleResponse<QuizSessionStartResponse>(res))
+}
+
+export function submitAnswer(
+  sessionId: number,
+  questionId: number,
+  selectedChoiceNumber: number,
+): Promise<QuizAnswerResponse> {
+  return fetch(`${API_BASE_URL}/api/quiz-sessions/${sessionId}/answers`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ question_id: questionId, selected_choice_number: selectedChoiceNumber }),
+  }).then((res) => handleResponse<QuizAnswerResponse>(res))
+}
+
+export function finishQuizSession(sessionId: number): Promise<QuizSessionFinishResponse> {
+  return fetch(`${API_BASE_URL}/api/quiz-sessions/${sessionId}/finish`, {
+    method: 'POST',
+  }).then((res) => handleResponse<QuizSessionFinishResponse>(res))
 }
