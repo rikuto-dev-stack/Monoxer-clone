@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from pydantic import BaseModel, ConfigDict, Field
 
 # docs/api-design.md のリクエスト/レスポンス形式に対応するPydanticスキーマ。
@@ -88,3 +90,20 @@ class QuizSessionFinishResponse(BaseModel):
     correct_count: int
     accuracy: float
     incorrect_question_ids: list[int]
+
+
+class QuizSessionHistoryOut(BaseModel):
+    id: int
+    quiz_set_id: int
+    quiz_set_name: str
+    started_at: datetime
+    finished_at: datetime | None
+    total_questions: int
+    correct_count: int
+
+
+class QuizSetStatsOut(BaseModel):
+    quiz_set_id: int
+    cumulative_correct: int
+    cumulative_total: int
+    cumulative_accuracy: float

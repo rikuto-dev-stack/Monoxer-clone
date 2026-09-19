@@ -17,6 +17,38 @@ def _get_session_or_404(db: Session, session_id: int) -> models.QuizSession:
     return session
 
 
+@router.get("", response_model=list[schemas.QuizSessionHistoryOut])
+def list_quiz_sessions(
+    quiz_set_id: int | None = None,
+    limit: int = 20,
+    offset: int = 0,
+    db: Session = Depends(get_db),
+):
+    # 完了した(finished_atが入っている)セッションのみを、新しい順で返す
+    query = (
+        db.query(models.QuizSession, models.QuizSet.name)
+        .join(models.QuizSet, models.QuizSession.quiz_set_id == models.QuizSet.id)
+        .filter(models.QuizSession.finished_at.is_not(None))
+    )
+    if quiz_set_id is not None:
+        query = query.filter(models.QuizSession.quiz_set_id == quiz_set_id)
+
+    rows = query.order_by(models.QuizSession.finished_at.desc()).offset(offset).limit(limit).all()
+
+    return [
+        schemas.QuizSessionHistoryOut(
+            id=session.id,
+            quiz_set_id=session.quiz_set_id,
+            quiz_set_name=quiz_set_name,
+            started_at=session.started_at,
+            finished_at=session.finished_at,
+            total_questions=session.total_questions,
+            correct_count=session.correct_count,
+        )
+        for session, quiz_set_name in rows
+    ]
+
+
 @router.post("", response_model=schemas.QuizSessionStartResponse, status_code=status.HTTP_201_CREATED)
 def start_quiz_session(payload: schemas.QuizSessionStartRequest, db: Session = Depends(get_db)):
     quiz_set = db.get(models.QuizSet, payload.quiz_set_id)

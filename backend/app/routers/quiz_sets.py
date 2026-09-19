@@ -23,6 +23,22 @@ def _get_quiz_set_or_404(db: Session, quiz_set_id: int) -> models.QuizSet:
     return quiz_set
 
 
+def _latest_accuracy(db: Session, quiz_set_id: int) -> float | None:
+    # 一番最近「終了した」セッションの正答率を返す(未挑戦・進行中のみの場合はNone)
+    latest_session = (
+        db.query(models.QuizSession)
+        .filter(
+            models.QuizSession.quiz_set_id == quiz_set_id,
+            models.QuizSession.finished_at.is_not(None),
+        )
+        .order_by(models.QuizSession.finished_at.desc())
+        .first()
+    )
+    if latest_session is None or latest_session.total_questions == 0:
+        return None
+    return latest_session.correct_count / latest_session.total_questions
+
+
 @router.get("", response_model=list[schemas.QuizSetOut])
 def list_quiz_sets(db: Session = Depends(get_db)):
     quiz_sets = db.query(models.QuizSet).order_by(models.QuizSet.created_at.desc()).all()
@@ -31,8 +47,7 @@ def list_quiz_sets(db: Session = Depends(get_db)):
             id=quiz_set.id,
             name=quiz_set.name,
             question_count=_count_questions(db, quiz_set.id),
-            # クイズセッション機能はまだ実装していないため、直近正答率は常にNone(未挑戦扱い)
-            latest_accuracy=None,
+            latest_accuracy=_latest_accuracy(db, quiz_set.id),
         )
         for quiz_set in quiz_sets
     ]
@@ -83,7 +98,7 @@ def update_quiz_set(quiz_set_id: int, payload: schemas.QuizSetUpdate, db: Sessio
         id=quiz_set.id,
         name=quiz_set.name,
         question_count=_count_questions(db, quiz_set.id),
-        latest_accuracy=None,
+        latest_accuracy=_latest_accuracy(db, quiz_set.id),
     )
 
 
@@ -93,3 +108,28 @@ def delete_quiz_set(quiz_set_id: int, db: Session = Depends(get_db)):
     # ON DELETE CASCADEで問題・学習履歴も連動して削除される(db-design.md参照)
     db.delete(quiz_set)
     db.commit()
+
+
+@router.get("/{quiz_set_id}/stats", response_model=schemas.QuizSetStatsOut)
+def get_quiz_set_stats(quiz_set_id: int, db: Session = Depends(get_db)):
+    _get_quiz_set_or_404(db, quiz_set_id)
+
+    cumulative_correct, cumulative_total = (
+        db.query(
+            func.coalesce(func.sum(models.QuizSession.correct_count), 0),
+            func.coalesce(func.sum(models.QuizSession.total_questions), 0),
+        )
+        .filter(
+            models.QuizSession.quiz_set_id == quiz_set_id,
+            models.QuizSession.finished_at.is_not(None),
+        )
+        .one()
+    )
+    cumulative_accuracy = cumulative_correct / cumulative_total if cumulative_total else 0.0
+
+    return schemas.QuizSetStatsOut(
+        quiz_set_id=quiz_set_id,
+        cumulative_correct=cumulative_correct,
+        cumulative_total=cumulative_total,
+        cumulative_accuracy=cumulative_accuracy,
+    )

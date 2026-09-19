@@ -38,6 +38,8 @@ export function QuizSetListPage() {
       <h1>問題集一覧</h1>
       <p>
         <Link to="/quiz-sets/new">＋ 新規作成</Link>
+        {' '}
+        <Link to="/history">履歴を見る</Link>
       </p>
 
       {isLoading && <p>読み込み中...</p>}

@@ -61,3 +61,22 @@ export type QuizSessionFinishResponse = {
   accuracy: number
   incorrect_question_ids: number[]
 }
+
+// 学習履歴一覧の1件分(バックエンドのQuizSessionHistoryOutスキーマに対応)
+export type QuizSessionHistory = {
+  id: number
+  quiz_set_id: number
+  quiz_set_name: string
+  started_at: string
+  finished_at: string | null
+  total_questions: number
+  correct_count: number
+}
+
+// 問題集ごとの累積正答率(バックエンドのQuizSetStatsOutスキーマに対応)
+export type QuizSetStats = {
+  quiz_set_id: number
+  cumulative_correct: number
+  cumulative_total: number
+  cumulative_accuracy: number
+}

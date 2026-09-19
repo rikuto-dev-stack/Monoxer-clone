@@ -3,9 +3,11 @@ import type {
   QuestionInput,
   QuizAnswerResponse,
   QuizSessionFinishResponse,
+  QuizSessionHistory,
   QuizSessionStartResponse,
   QuizSet,
   QuizSetDetail,
+  QuizSetStats,
 } from '../types'
 
 // バックエンドのURLは環境変数(.envのVITE_API_BASE_URL)から読み込む
@@ -109,4 +111,14 @@ export function finishQuizSession(sessionId: number): Promise<QuizSessionFinishR
   return fetch(`${API_BASE_URL}/api/quiz-sessions/${sessionId}/finish`, {
     method: 'POST',
   }).then((res) => handleResponse<QuizSessionFinishResponse>(res))
+}
+
+export function getQuizSessions(): Promise<QuizSessionHistory[]> {
+  return fetch(`${API_BASE_URL}/api/quiz-sessions`).then((res) => handleResponse<QuizSessionHistory[]>(res))
+}
+
+export function getQuizSetStats(quizSetId: number): Promise<QuizSetStats> {
+  return fetch(`${API_BASE_URL}/api/quiz-sets/${quizSetId}/stats`).then((res) =>
+    handleResponse<QuizSetStats>(res),
+  )
 }

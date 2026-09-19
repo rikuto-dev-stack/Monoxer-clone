@@ -1,4 +1,5 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import { HistoryPage } from './pages/HistoryPage'
 import { QuestionFormPage } from './pages/QuestionFormPage'
 import { QuizPlayPage } from './pages/QuizPlayPage'
 import { QuizSetDetailPage } from './pages/QuizSetDetailPage'
@@ -11,6 +12,7 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<QuizSetListPage />} />
+        <Route path="/history" element={<HistoryPage />} />
         <Route path="/quiz-sets/new" element={<QuizSetFormPage />} />
         <Route path="/quiz-sets/:id/edit" element={<QuizSetFormPage />} />
         <Route path="/quiz-sets/:id" element={<QuizSetDetailPage />} />
